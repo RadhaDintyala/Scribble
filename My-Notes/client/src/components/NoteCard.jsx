@@ -48,5 +48,5 @@ export default function NoteCard({ note, onDelete, onUpdate }) {
         </button>
       </div>
     </motion.div>
-  ;
+  );
 }
