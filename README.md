@@ -2,11 +2,11 @@ Since your project is named **Scribble** and has that sleek, glassmorphic aesthe
 
 -----
 
-# 🚀 Scribble | Modern Note-Taking
+# ✨ Scribble | Modern Note-Taking
 
 **Scribble** is a high-performance, glassmorphic note-taking application inspired by Google Keep. It combines a minimalist aesthetic with a powerful user experience, allowing you to capture ideas, checklists, and voice notes on a stunning, translucent interface.
 
-## ✨ Key Features
+## 🚀 Key Features
 
   * **Glassmorphic UI:** A beautiful, frosted-glass interface that adapts to your wallpaper.
   * **Real-time Creation:** Quickly jot down notes with an intuitive "Take a Note" interface.
