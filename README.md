@@ -1,5 +1,5 @@
 # ✨ Scribble | Modern Note-Taking
-⚠️ Work In Progress
+⚠️ Work In Progress:
 Scribble is currently under active development. Some features may be in a beta state, and the UI is being polished daily to achieve the perfect glassmorphic experience.
 
 **Scribble** is a high-performance, glassmorphic note-taking application inspired by Google Keep. It combines a minimalist aesthetic with a powerful user experience, allowing you to capture ideas, checklists, and voice notes on a stunning, translucent interface.
