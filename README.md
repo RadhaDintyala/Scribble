@@ -10,9 +10,8 @@ Since your project is named **Scribble** and has that sleek, glassmorphic aesthe
 
   * **Glassmorphic UI:** A beautiful, frosted-glass interface that adapts to your wallpaper.
   * **Real-time Creation:** Quickly jot down notes with an intuitive "Take a Note" interface.
-  * **Dark Mode Support:** Seamlessly toggle between Light and Dark themes.
   * **Responsive Design:** Optimized for both desktop and mobile views with a floating capsule navbar.
-  * **Voice Integration:** (Coming soon/In-progress) Record thoughts on the go.
+  * **Voice Integration:**  Record thoughts on the go.
   * **Secure Auth:** Full Login and Signup flow to keep your scribbles private.
 
 ## 🛠️ Tech Stack
@@ -36,8 +35,8 @@ Since your project is named **Scribble** and has that sleek, glassmorphic aesthe
 1.  **Clone the repository:**
 
     ```bash
-    git clone https://github.com/yourusername/scribble-clone.git
-    cd scribble-clone
+    git clone https://github.com/RadhaDintyala/Scribble.git
+    cd Scribble
     ```
 
 2.  **Install dependencies:**
@@ -77,13 +76,7 @@ client/
 │   ├── pages/       # Home, Login, Signup
 │   ├── App.jsx      # Route management
 │   └── main.jsx     # Entry point
-server/
-├── public/          # Assets (Favicons, etc.)
-├── src/
-│   ├── components/  # Navbar, NoteCard, CreateNote
-│   ├── pages/       # Home, Login, Signup
-│   ├── App.jsx      # Route management
-│   └── main.jsx     # Entry point
+
 ```
 
 -----
