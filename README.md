@@ -1,7 +1,3 @@
-Since your project is named **Scribble** and has that sleek, glassmorphic aesthetic, the README should reflect that same "premium" feel. Here is a clean, professional, and well-structured `README.md` template you can copy and paste.
-
------
-
 # ✨ Scribble | Modern Note-Taking
 
 **Scribble** is a high-performance, glassmorphic note-taking application inspired by Google Keep. It combines a minimalist aesthetic with a powerful user experience, allowing you to capture ideas, checklists, and voice notes on a stunning, translucent interface.
