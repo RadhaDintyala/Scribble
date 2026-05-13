@@ -4,7 +4,7 @@ import CreateNote from '../components/CreateNote';
 import NoteCard from '../components/NoteCard';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function Home({ user }) {
+export default function Home() {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -14,10 +14,7 @@ export default function Home({ user }) {
 
   const fetchNotes = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/notes`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/notes`);
       setNotes(res.data);
     } catch (error) {
       console.error('Error fetching notes', error);
@@ -26,16 +23,18 @@ export default function Home({ user }) {
     }
   };
 
-  const handleNoteCreated = (newNote) => {
-    setNotes([newNote, ...notes]);
+  const handleSaveNote = async ({ title, content }) => {
+    try {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/notes`, { title, content });
+      setNotes([res.data, ...notes]);
+    } catch (error) {
+      console.error('Error creating note', error);
+    }
   };
 
   const handleDelete = async (id) => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`${import.meta.env.VITE_API_URL}/notes/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await axios.delete(`${import.meta.env.VITE_API_URL}/notes/${id}`);
       setNotes(notes.filter(note => note._id !== id));
     } catch (error) {
       console.error('Error deleting note', error);
@@ -44,11 +43,12 @@ export default function Home({ user }) {
 
   const handleUpdate = async (id, updates) => {
     try {
-      const token = localStorage.getItem('token');
-      const res = await axios.put(`${import.meta.env.VITE_API_URL}/notes/${id}`, updates, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setNotes(notes.map(note => note._id === id ? res.data : note).sort((a, b) => b.isPinned - a.isPinned));
+      const res = await axios.put(`${import.meta.env.VITE_API_URL}/notes/${id}`, updates);
+      setNotes(
+        notes
+          .map(note => (note._id === id ? res.data : note))
+          .sort((a, b) => b.isPinned - a.isPinned)
+      );
     } catch (error) {
       console.error('Error updating note', error);
     }
@@ -58,18 +58,35 @@ export default function Home({ user }) {
   const otherNotes = notes.filter(n => !n.isPinned);
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
-      <CreateNote onNoteCreated={handleNoteCreated} />
+    <div
+      className="min-h-screen pt-28 pb-16 px-6 transition-colors duration-500"
+      style={{ maxWidth: '1100px', margin: '0 auto' }}
+    >
+      <CreateNote onSave={handleSaveNote} />
 
       {loading ? (
-        <div className="flex justify-center mt-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-white"></div>
+        <div className="flex justify-center mt-16">
+          <div
+            style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '50%',
+              border: '2.5px solid transparent',
+              borderTopColor: '#92400e',
+              animation: 'spin 0.8s linear infinite',
+            }}
+          />
         </div>
       ) : (
-        <div className="mt-8">
+        <div className="mt-10">
           {pinnedNotes.length > 0 && (
-            <div className="mb-8">
-              <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4 ml-2">Pinned</h2>
+            <div className="mb-10">
+              <p
+                className="text-xs uppercase tracking-[0.18em] mb-5 ml-1 dark:text-stone-400 text-stone-500"
+                style={{ fontFamily: '"DM Sans", sans-serif', fontWeight: 600 }}
+              >
+                Pinned
+              </p>
               <motion.div layout className="masonry-grid">
                 <AnimatePresence>
                   {pinnedNotes.map(note => (
@@ -82,7 +99,14 @@ export default function Home({ user }) {
 
           {otherNotes.length > 0 && (
             <div>
-              {pinnedNotes.length > 0 && <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4 ml-2">Others</h2>}
+              {pinnedNotes.length > 0 && (
+                <p
+                  className="text-xs uppercase tracking-[0.18em] mb-5 ml-1 dark:text-stone-400 text-stone-500"
+                  style={{ fontFamily: '"DM Sans", sans-serif', fontWeight: 600 }}
+                >
+                  Others
+                </p>
+              )}
               <motion.div layout className="masonry-grid">
                 <AnimatePresence>
                   {otherNotes.map(note => (
@@ -94,9 +118,18 @@ export default function Home({ user }) {
           )}
 
           {notes.length === 0 && (
-            <div className="text-center mt-20 text-gray-500 dark:text-gray-400">
-              <p className="text-xl">Notes you add appear here</p>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center mt-24"
+            >
+              <p
+                className="dark:text-stone-500 text-stone-400 text-lg"
+                style={{ fontFamily: '"Playfair Display", Georgia, serif', fontStyle: 'italic' }}
+              >
+                Your thoughts will appear here…
+              </p>
+            </motion.div>
           )}
         </div>
       )}

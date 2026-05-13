@@ -1,68 +1,70 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { Search, Menu, Moon, Sun, Mic } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Moon, Sun, PenLine } from 'lucide-react';
 
-export default function Navbar({ user, setUser, darkMode, setDarkMode }) {
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    setUser(null);
-    navigate('/login');
-  };
-
+export default function Navbar({ darkMode, setDarkMode }) {
   return (
-    <nav className="flex items-center justify-between p-3 border-b border-white/40 dark:border-white/10 bg-white/70 dark:bg-[#202124]/70 backdrop-blur-md sticky top-0 z-50">
-      <div className="flex items-center space-x-4">
-        <button className="p-2 hover:bg-gray-100 dark:hover:bg-darkCard rounded-full transition-colors">
-          <Menu size={24} />
-        </button>
-        <Link to="/" className="flex items-center space-x-2">
-          <div className="bg-yellow-400 p-1.5 rounded-md">
-            <Mic size={20} className="text-white" />
-          </div>
-          <span className="text-xl font-medium hidden sm:block">Voice Keep</span>
-        </Link>
-      </div>
-
-      {user && (
-        <div className="flex-1 max-w-2xl px-4 hidden md:block">
-          <div className="flex items-center bg-gray-100 dark:bg-darkCard px-4 py-2.5 rounded-lg focus-within:shadow-md transition-shadow">
-            <Search size={20} className="text-gray-500" />
-            <input
-              type="text"
-              placeholder="Search"
-              className="bg-transparent border-none outline-none w-full ml-3 text-gray-700 dark:text-gray-200"
-            />
-          </div>
-        </div>
-      )}
-
-      <div className="flex items-center space-x-2">
-        <button
-          onClick={() => setDarkMode(!darkMode)}
-          className="p-2 hover:bg-gray-100 dark:hover:bg-darkCard rounded-full transition-colors"
+    <div className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-8 py-5">
+      {/* Logo */}
+      <Link to="/" className="flex items-center gap-2 group">
+        <div
+          style={{
+            background: darkMode
+              ? 'rgba(255,255,255,0.08)'
+              : 'rgba(30, 20, 10, 0.07)',
+            border: darkMode
+              ? '1px solid rgba(255,255,255,0.12)'
+              : '1px solid rgba(30,20,10,0.12)',
+            borderRadius: '14px',
+            padding: '7px 9px',
+            backdropFilter: 'blur(8px)',
+          }}
         >
-          {darkMode ? <Sun size={24} /> : <Moon size={24} />}
-        </button>
-        {user ? (
-          <button
-            onClick={handleLogout}
-            className="px-4 py-2 font-medium text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-darkCard rounded-md transition-colors"
-          >
-            Logout
-          </button>
-        ) : (
-          <div className="space-x-2">
-            <Link to="/login" className="px-4 py-2 font-medium text-sm hover:bg-gray-100 dark:hover:bg-darkCard rounded-md transition-colors">
-              Login
-            </Link>
-            <Link to="/signup" className="px-4 py-2 font-medium text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-              Sign Up
-            </Link>
-          </div>
-        )}
-      </div>
-    </nav>
+          <PenLine
+            size={18}
+            className={darkMode ? 'text-amber-300' : 'text-amber-800'}
+          />
+        </div>
+        <span
+          style={{
+            fontFamily: '"Playfair Display", Georgia, serif',
+            fontSize: '1.25rem',
+            fontWeight: 700,
+            letterSpacing: '-0.02em',
+          }}
+          className={darkMode ? 'text-white' : 'text-stone-800'}
+        >
+          Scribble
+        </span>
+      </Link>
+
+      {/* Dark mode toggle */}
+      <button
+        onClick={() => setDarkMode(!darkMode)}
+        style={{
+          background: darkMode
+            ? 'rgba(255,255,255,0.08)'
+            : 'rgba(30, 20, 10, 0.07)',
+          border: darkMode
+            ? '1px solid rgba(255,255,255,0.12)'
+            : '1px solid rgba(30,20,10,0.12)',
+          borderRadius: '50%',
+          width: '40px',
+          height: '40px',
+          backdropFilter: 'blur(8px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          transition: 'all 0.2s ease',
+        }}
+        className={
+          darkMode
+            ? 'text-amber-300 hover:bg-white/15'
+            : 'text-amber-800 hover:bg-black/10'
+        }
+      >
+        {darkMode ? <Sun size={17} /> : <Moon size={17} />}
+      </button>
+    </div>
   );
 }
