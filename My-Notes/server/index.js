@@ -5,7 +5,6 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-const authRoutes = require('./routes/auth');
 const noteRoutes = require('./routes/notes');
 const app = express();
 
@@ -16,7 +15,6 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/keepclone
   .then(() => console.log('Connected to MongoDB'))
   .catch((err) => console.error('MongoDB connection error:', err));
 
-app.use('/api/auth', authRoutes);
 app.use('/api/notes', noteRoutes);
 
 const PORT = process.env.PORT || 5000;
