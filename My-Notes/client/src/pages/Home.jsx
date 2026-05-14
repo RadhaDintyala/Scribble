@@ -1,16 +1,28 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import CreateNote from '../components/CreateNote';
 import NoteCard from '../components/NoteCard';
 import { motion, AnimatePresence } from 'framer-motion';
+import gsap from 'gsap';
 
 export default function Home() {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const containerRef = useRef(null);
 
   useEffect(() => {
     fetchNotes();
   }, []);
+
+  useEffect(() => {
+    if (!loading && containerRef.current) {
+      gsap.fromTo(
+        containerRef.current.children,
+        { y: 50, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8, stagger: 0.15, ease: 'power3.out' }
+      );
+    }
+  }, [loading]);
 
   const fetchNotes = async () => {
     try {
@@ -59,7 +71,7 @@ export default function Home() {
 
   return (
     <div
-      className="min-h-screen pt-28 pb-16 px-6 transition-colors duration-500"
+      className="min-h-screen pt-32 pb-16 px-6 transition-colors duration-500"
       style={{ maxWidth: '1100px', margin: '0 auto' }}
     >
       <CreateNote onSave={handleSaveNote} />
@@ -78,7 +90,7 @@ export default function Home() {
           />
         </div>
       ) : (
-        <div className="mt-10">
+        <div ref={containerRef} className="mt-10">
           {pinnedNotes.length > 0 && (
             <div className="mb-10">
               <p

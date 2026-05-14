@@ -6,23 +6,33 @@ export default function NoteCard({ note, onDelete, onUpdate }) {
   const isDark = document.documentElement.classList.contains('dark');
 
   const cardStyle = {
-    backdropFilter: 'blur(14px) saturate(140%)',
-    WebkitBackdropFilter: 'blur(14px) saturate(140%)',
+    // ── Glassmorphism base ──
+    backdropFilter: 'blur(20px) saturate(180%)',
+    WebkitBackdropFilter: 'blur(20px) saturate(180%)',
     background:
       note.color && note.color !== '#ffffff'
         ? isDark
           ? `${note.color}28`
-          : `${note.color}44`
+          : `${note.color}55`
         : isDark
         ? 'rgba(28, 22, 14, 0.65)'
-        : 'rgba(255, 251, 243, 0.75)',
+        : 'rgba(255, 252, 245, 0.72)',
+
+    // ── Claymorphism: border + layered puffy shadow ──
     border: isDark
-      ? '1px solid rgba(255,255,255,0.08)'
-      : '1px solid rgba(120, 80, 40, 0.12)',
-    borderRadius: '20px',
+      ? '1.5px solid rgba(255,255,255,0.10)'
+      : '1.5px solid rgba(255,255,255,0.75)',
+    borderRadius: '24px',
     boxShadow: isDark
-      ? '0 4px 24px rgba(0,0,0,0.3)'
-      : '0 4px 24px rgba(80,40,10,0.07)',
+      ? `0 2px 0 1px rgba(255,255,255,0.07) inset,
+         0 -1px 0 1px rgba(0,0,0,0.25) inset,
+         0 8px 32px rgba(0,0,0,0.38),
+         0 2px 8px rgba(0,0,0,0.22)`
+      : `0 2px 0 1px rgba(255,255,255,0.60) inset,
+         0 -1px 0 1px rgba(0,0,0,0.06) inset,
+         0 8px 32px rgba(80,40,10,0.13),
+         0 2px 8px rgba(80,40,10,0.09)`,
+
     padding: '20px 22px',
     position: 'relative',
     overflow: 'hidden',
@@ -37,40 +47,75 @@ export default function NoteCard({ note, onDelete, onUpdate }) {
       initial={{ opacity: 0, scale: 0.93 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.93 }}
-      whileHover={{ y: -4, boxShadow: isDark
-        ? '0 10px 40px rgba(0,0,0,0.4)'
-        : '0 10px 40px rgba(80,40,10,0.13)' }}
+      whileHover={{
+        y: -5,
+        scale: 1.015,
+        boxShadow: isDark
+          ? `0 2px 0 1px rgba(255,255,255,0.09) inset,
+             0 -1px 0 1px rgba(0,0,0,0.30) inset,
+             0 20px 60px rgba(0,0,0,0.50),
+             0 6px 20px rgba(0,0,0,0.28)`
+          : `0 2px 0 1px rgba(255,255,255,0.70) inset,
+             0 -1px 0 1px rgba(0,0,0,0.07) inset,
+             0 20px 60px rgba(80,40,10,0.18),
+             0 6px 20px rgba(80,40,10,0.12)`,
+      }}
       transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
       className="group"
       style={cardStyle}
     >
-      {/* Pinned accent */}
+      {/* ── Clay glossy sheen (top highlight stripe) ── */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: '10%',
+          right: '10%',
+          height: '40%',
+          background: isDark
+            ? 'linear-gradient(180deg, rgba(255,255,255,0.07) 0%, transparent 100%)'
+            : 'linear-gradient(180deg, rgba(255,255,255,0.55) 0%, transparent 100%)',
+          borderRadius: '0 0 60% 60%',
+          pointerEvents: 'none',
+        }}
+      />
+
+      {/* Pinned accent — unchanged logic */}
       {note.isPinned && (
         <div
           style={{
             position: 'absolute',
             top: 0,
             left: 0,
-            width: '3px',
+            width: '4px',
             height: '100%',
-            background: isDark ? '#b45309' : '#92400e',
-            borderRadius: '20px 0 0 20px',
-            opacity: 0.8,
+            background: isDark
+              ? 'linear-gradient(180deg, #f59e0b, #b45309)'
+              : 'linear-gradient(180deg, #fbbf24, #92400e)',
+            borderRadius: '24px 0 0 24px',
+            opacity: 0.85,
           }}
         />
       )}
 
-      {/* Pin button */}
+      {/* Pin button — unchanged logic */}
       <button
         onClick={() => onUpdate(note._id, { isPinned: !note.isPinned })}
         style={{
           position: 'absolute',
           top: '14px',
           right: '14px',
-          padding: '5px',
-          borderRadius: '8px',
-          background: 'transparent',
-          border: 'none',
+          padding: '6px',
+          borderRadius: '10px',
+          background: isDark
+            ? 'rgba(255,255,255,0.06)'
+            : 'rgba(255,255,255,0.55)',
+          border: isDark
+            ? '1px solid rgba(255,255,255,0.09)'
+            : '1px solid rgba(255,255,255,0.75)',
+          boxShadow: isDark
+            ? '0 1px 4px rgba(0,0,0,0.25)'
+            : '0 1px 4px rgba(80,40,10,0.10)',
           cursor: 'pointer',
           transition: 'all 0.2s',
           opacity: note.isPinned ? 1 : 0,
@@ -87,7 +132,7 @@ export default function NoteCard({ note, onDelete, onUpdate }) {
         />
       </button>
 
-      {/* Content */}
+      {/* Content — completely unchanged */}
       <div style={{ paddingRight: '24px' }}>
         {note.title && (
           <h3
@@ -118,7 +163,7 @@ export default function NoteCard({ note, onDelete, onUpdate }) {
         )}
       </div>
 
-      {/* Footer actions */}
+      {/* Footer actions — unchanged logic, clay-styled buttons */}
       <div
         style={{
           marginTop: '12px',
@@ -132,10 +177,17 @@ export default function NoteCard({ note, onDelete, onUpdate }) {
         <button
           onClick={() => onDelete(note._id)}
           style={{
-            padding: '5px 7px',
-            borderRadius: '8px',
-            border: 'none',
-            background: 'transparent',
+            padding: '5px 9px',
+            borderRadius: '10px',
+            border: isDark
+              ? '1px solid rgba(255,255,255,0.07)'
+              : '1px solid rgba(255,255,255,0.65)',
+            background: isDark
+              ? 'rgba(255,255,255,0.05)'
+              : 'rgba(255,255,255,0.50)',
+            boxShadow: isDark
+              ? '0 1px 4px rgba(0,0,0,0.2)'
+              : '0 1px 4px rgba(80,40,10,0.08)',
             cursor: 'pointer',
             transition: 'all 0.15s',
           }}
@@ -145,10 +197,17 @@ export default function NoteCard({ note, onDelete, onUpdate }) {
         </button>
         <button
           style={{
-            padding: '5px 7px',
-            borderRadius: '8px',
-            border: 'none',
-            background: 'transparent',
+            padding: '5px 9px',
+            borderRadius: '10px',
+            border: isDark
+              ? '1px solid rgba(255,255,255,0.07)'
+              : '1px solid rgba(255,255,255,0.65)',
+            background: isDark
+              ? 'rgba(255,255,255,0.05)'
+              : 'rgba(255,255,255,0.50)',
+            boxShadow: isDark
+              ? '0 1px 4px rgba(0,0,0,0.2)'
+              : '0 1px 4px rgba(80,40,10,0.08)',
             cursor: 'pointer',
             transition: 'all 0.15s',
           }}
