@@ -1,9 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import io from 'socket.io-client';
 import CreateNote from '../components/CreateNote';
 import NoteCard from '../components/NoteCard';
 import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
+
+// Connect to the backend
+const socket = io(import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000');
 
 export default function Home() {
   const [notes, setNotes] = useState([]);
@@ -12,6 +16,34 @@ export default function Home() {
 
   useEffect(() => {
     fetchNotes();
+
+    // Socket listeners
+    socket.on('noteCreated', (newNote) => {
+      setNotes((prevNotes) => {
+        // Prevent duplicate if this client already added it
+        if (prevNotes.some(n => n._id === newNote._id)) return prevNotes;
+        return [newNote, ...prevNotes];
+      });
+    });
+
+    socket.on('noteUpdated', (updatedNote) => {
+      setNotes((prevNotes) => 
+        prevNotes
+          .map(note => (note._id === updatedNote._id ? updatedNote : note))
+          .sort((a, b) => b.isPinned - a.isPinned)
+      );
+    });
+
+    socket.on('noteDeleted', (deletedId) => {
+      setNotes((prevNotes) => prevNotes.filter(note => note._id !== deletedId));
+    });
+
+    // Cleanup
+    return () => {
+      socket.off('noteCreated');
+      socket.off('noteUpdated');
+      socket.off('noteDeleted');
+    };
   }, []);
 
   useEffect(() => {
@@ -38,7 +70,10 @@ export default function Home() {
   const handleSaveNote = async ({ title, content }) => {
     try {
       const res = await axios.post(`${import.meta.env.VITE_API_URL}/notes`, { title, content });
-      setNotes([res.data, ...notes]);
+      setNotes(prev => {
+        if (prev.some(n => n._id === res.data._id)) return prev;
+        return [res.data, ...prev];
+      });
     } catch (error) {
       console.error('Error creating note', error);
     }
@@ -47,7 +82,8 @@ export default function Home() {
   const handleDelete = async (id) => {
     try {
       await axios.delete(`${import.meta.env.VITE_API_URL}/notes/${id}`);
-      setNotes(notes.filter(note => note._id !== id));
+      // Optimistic update
+      setNotes(prev => prev.filter(note => note._id !== id));
     } catch (error) {
       console.error('Error deleting note', error);
     }
@@ -56,8 +92,9 @@ export default function Home() {
   const handleUpdate = async (id, updates) => {
     try {
       const res = await axios.put(`${import.meta.env.VITE_API_URL}/notes/${id}`, updates);
-      setNotes(
-        notes
+      // Optimistic update
+      setNotes(prev =>
+        prev
           .map(note => (note._id === id ? res.data : note))
           .sort((a, b) => b.isPinned - a.isPinned)
       );
