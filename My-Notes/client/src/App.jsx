@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
+  const [token, setToken] = useState(localStorage.getItem('token'));
 
   useEffect(() => {
     const isDark = localStorage.getItem('darkMode') === 'true';
@@ -30,8 +31,8 @@ function App() {
   return (
     <div className="min-h-screen relative z-0">
       <AnimatedBackground isDark={darkMode} />
-      <Navbar darkMode={darkMode} setDarkMode={handleSetDarkMode} />
-      <Home />
+      <Navbar darkMode={darkMode} setDarkMode={handleSetDarkMode} token={token} setToken={setToken} />
+      <Home token={token} />
     </div>
   );
 }

@@ -9,13 +9,23 @@ import gsap from 'gsap';
 // Connect to the backend
 const socket = io(import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000');
 
-export default function Home() {
+export default function Home({ token }) {
   const [notes, setNotes] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const containerRef = useRef(null);
 
   useEffect(() => {
-    fetchNotes();
+    if (token) {
+      setLoading(true);
+      fetchNotes();
+      const userId = localStorage.getItem('userId');
+      if (userId) {
+        socket.emit('join', userId);
+      }
+    } else {
+      setNotes([]);
+      setLoading(false);
+    }
 
     // Socket listeners
     socket.on('noteCreated', (newNote) => {
@@ -44,7 +54,7 @@ export default function Home() {
       socket.off('noteUpdated');
       socket.off('noteDeleted');
     };
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     if (!loading && containerRef.current) {
@@ -58,7 +68,9 @@ export default function Home() {
 
   const fetchNotes = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/notes`);
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/notes`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setNotes(res.data);
     } catch (error) {
       console.error('Error fetching notes', error);
@@ -69,7 +81,9 @@ export default function Home() {
 
   const handleSaveNote = async ({ title, content }) => {
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/notes`, { title, content });
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/notes`, { title, content }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setNotes(prev => {
         if (prev.some(n => n._id === res.data._id)) return prev;
         return [res.data, ...prev];
@@ -81,7 +95,9 @@ export default function Home() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${import.meta.env.VITE_API_URL}/notes/${id}`);
+      await axios.delete(`${import.meta.env.VITE_API_URL}/notes/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       // Optimistic update
       setNotes(prev => prev.filter(note => note._id !== id));
     } catch (error) {
@@ -91,7 +107,9 @@ export default function Home() {
 
   const handleUpdate = async (id, updates) => {
     try {
-      const res = await axios.put(`${import.meta.env.VITE_API_URL}/notes/${id}`, updates);
+      const res = await axios.put(`${import.meta.env.VITE_API_URL}/notes/${id}`, updates, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       // Optimistic update
       setNotes(prev =>
         prev
@@ -111,7 +129,22 @@ export default function Home() {
       className="min-h-screen pt-32 pb-16 px-6 transition-colors duration-500"
       style={{ maxWidth: '1100px', margin: '0 auto' }}
     >
-      <CreateNote onSave={handleSaveNote} />
+      {!token ? (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mt-24"
+        >
+          <p
+            className="dark:text-stone-500 text-stone-400 text-xl font-medium"
+            style={{ fontFamily: '"Playfair Display", Georgia, serif' }}
+          >
+            Please login from the menu to view or create notes.
+          </p>
+        </motion.div>
+      ) : (
+        <>
+          <CreateNote onSave={handleSaveNote} />
 
       {loading ? (
         <div className="flex justify-center mt-16">
@@ -181,6 +214,8 @@ export default function Home() {
             </motion.div>
           )}
         </div>
+      )}
+        </>
       )}
     </div>
   );
