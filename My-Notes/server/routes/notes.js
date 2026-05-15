@@ -1,26 +1,27 @@
 const express = require('express');
 const Note = require('../models/Note');
+const auth = require('../middleware/auth');
 
 const router = express.Router();
 
 //get
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
   try {
-    const notes = await Note.find().sort({ isPinned: -1, updatedAt: -1 });
+    const notes = await Note.find({ userId: req.user.id }).sort({ isPinned: -1, updatedAt: -1 });
     res.status(200).json(notes);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching notes' });
   }
 });
 //post
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
   try {
-    const note = new Note({ ...req.body });
+    const note = new Note({ ...req.body, userId: req.user.id });
     await note.save();
     
-    // Emit event to all connected clients
+    // Emit event to all connected clients in this user's room
     const io = req.app.get('io');
-    if (io) io.emit('noteCreated', note);
+    if (io) io.to(`user-${req.user.id}`).emit('noteCreated', note);
     
     res.status(201).json(note);
   } catch (error) {
@@ -28,10 +29,10 @@ router.post('/', async (req, res) => {
   }
 });
 //put
-router.put('/:id', async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
   try {
     const note = await Note.findOneAndUpdate(
-      { _id: req.params.id },
+      { _id: req.params.id, userId: req.user.id },
       req.body,
       { new: true }
     );
@@ -39,7 +40,7 @@ router.put('/:id', async (req, res) => {
     
     // Emit event
     const io = req.app.get('io');
-    if (io) io.emit('noteUpdated', note);
+    if (io) io.to(`user-${req.user.id}`).emit('noteUpdated', note);
     
     res.status(200).json(note);
   } catch (error) {
@@ -47,14 +48,14 @@ router.put('/:id', async (req, res) => {
   }
 });
 //delete
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
   try {
-    const note = await Note.findOneAndDelete({ _id: req.params.id });
+    const note = await Note.findOneAndDelete({ _id: req.params.id, userId: req.user.id });
     if (!note) return res.status(404).json({ message: 'Note not found' });
     
     // Emit event
     const io = req.app.get('io');
-    if (io) io.emit('noteDeleted', req.params.id);
+    if (io) io.to(`user-${req.user.id}`).emit('noteDeleted', req.params.id);
     
     res.status(200).json({ message: 'Note deleted successfully' });
   } catch (error) {

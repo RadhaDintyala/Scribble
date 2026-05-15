@@ -8,6 +8,7 @@ const { Server } = require('socket.io');
 dotenv.config();
 
 const noteRoutes = require('./routes/notes');
+const authRoutes = require('./routes/auth');
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -26,10 +27,18 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/keepclone
   .then(() => console.log('Connected to MongoDB'))
   .catch((err) => console.error('MongoDB connection error:', err));
 
+app.use('/api/auth', authRoutes);
 app.use('/api/notes', noteRoutes);
 
 io.on('connection', (socket) => {
   console.log('A client connected:', socket.id);
+  
+  // Client can emit 'join' with their userId to subscribe to their own updates
+  socket.on('join', (userId) => {
+    socket.join(`user-${userId}`);
+    console.log(`Socket ${socket.id} joined room user-${userId}`);
+  });
+
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
   });
