@@ -14,7 +14,7 @@ export default function AuthModal({ isOpen, onClose, mode, setToken }) {
     e.preventDefault();
     try {
       const endpoint = mode === 'login' ? '/auth/login' : '/auth/register';
-      const res = await axios.post(`${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}/api${endpoint}`, { username, password });
+      const res = await axios.post(`${import.meta.env.VITE_API_URL?.replace('/api', '') || 'https://scribble-note.onrender.com'}/api${endpoint}`, { username, password });
       
       setToken(res.data.token);
       localStorage.setItem('token', res.data.token);

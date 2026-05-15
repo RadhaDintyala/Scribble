@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 
 // Connect to the backend
-const socket = io(import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000');
+const socket = io(import.meta.env.VITE_API_URL?.replace('/api', '') || 'https://scribble-note.onrender.com');
 
 export default function Home({ token }) {
   const [notes, setNotes] = useState([]);
