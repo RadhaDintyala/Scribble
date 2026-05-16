@@ -3,6 +3,8 @@ import axios from 'axios';
 import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+const API_URL = import.meta.env.VITE_API_URL || 'https://scribble-note.onrender.com/api';
+
 export default function AuthModal({ isOpen, onClose, mode, setToken }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -14,7 +16,7 @@ export default function AuthModal({ isOpen, onClose, mode, setToken }) {
     e.preventDefault();
     try {
       const endpoint = mode === 'login' ? '/auth/login' : '/auth/register';
-      const res = await axios.post(`${import.meta.env.VITE_API_URL?.replace('/api', '') || 'https://scribble-note.onrender.com'}/api${endpoint}`, { username, password });
+      const res = await axios.post(`${API_URL}${endpoint}`, { username, password });
       
       setToken(res.data.token);
       localStorage.setItem('token', res.data.token);
