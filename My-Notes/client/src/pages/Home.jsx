@@ -1,68 +1,25 @@
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import io from 'socket.io-client';
 import CreateNote from '../components/CreateNote';
 import NoteCard from '../components/NoteCard';
 import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 
-const BACKEND_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'https://scribble-note.onrender.com';
-const API_URL = import.meta.env.VITE_API_URL || `${BACKEND_URL}/api`;
+const API_URL = import.meta.env.VITE_API_URL || 'https://scribble-note.onrender.com/api';
 
 export default function Home({ token }) {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(false);
   const containerRef = useRef(null);
-  const socketRef = useRef(null); // ✅ socket stored in ref, not module level
 
   useEffect(() => {
     if (token) {
       setLoading(true);
       fetchNotes();
-
-      // ✅ Only connect socket when logged in
-      socketRef.current = io(BACKEND_URL);
-
-      const userId = localStorage.getItem('userId');
-      if (userId) {
-        socketRef.current.emit('join', userId);
-      }
-
-      socketRef.current.on('noteCreated', (newNote) => {
-        setNotes((prevNotes) => {
-          if (prevNotes.some(n => n._id === newNote._id)) return prevNotes;
-          return [newNote, ...prevNotes];
-        });
-      });
-
-      socketRef.current.on('noteUpdated', (updatedNote) => {
-        setNotes((prevNotes) =>
-          prevNotes
-            .map(note => (note._id === updatedNote._id ? updatedNote : note))
-            .sort((a, b) => b.isPinned - a.isPinned)
-        );
-      });
-
-      socketRef.current.on('noteDeleted', (deletedId) => {
-        setNotes((prevNotes) => prevNotes.filter(note => note._id !== deletedId));
-      });
     } else {
       setNotes([]);
       setLoading(false);
-      // ✅ Disconnect socket on logout
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-        socketRef.current = null;
-      }
     }
-
-    return () => {
-      if (socketRef.current) {
-        socketRef.current.off('noteCreated');
-        socketRef.current.off('noteUpdated');
-        socketRef.current.off('noteDeleted');
-      }
-    };
   }, [token]);
 
   useEffect(() => {
