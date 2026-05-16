@@ -11,7 +11,19 @@ const authRoutes = require('./routes/auth');
 const app = express();
 
 app.use(cors({
-  origin: ['https://scribble-mauve.vercel.app', 'http://localhost:5173'],
+  origin: function (origin, callback) {
+    // Allow production, all Vercel previews, and localhost
+    if (
+      !origin ||
+      origin === 'https://scribble-mauve.vercel.app' ||
+      origin.endsWith('.vercel.app') ||
+      origin.startsWith('http://localhost')
+    ) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
 }));
 app.use(express.json());
