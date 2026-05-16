@@ -13,15 +13,18 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: '*',
+    origin: ['https://scribble-mauve.vercel.app', 'http://localhost:5173'],
     methods: ['GET', 'POST', 'PUT', 'DELETE']
   }
 });
 
-app.use(cors());
+app.use(cors({
+  origin: ['https://scribble-mauve.vercel.app', 'http://localhost:5173'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+}));
 app.use(express.json());
 
-app.set('io', io); // Make io accessible in routes
+app.set('io', io);
 
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/keepclone')
   .then(() => console.log('Connected to MongoDB'))
@@ -33,7 +36,6 @@ app.use('/api/notes', noteRoutes);
 io.on('connection', (socket) => {
   console.log('A client connected:', socket.id);
   
-  // Client can emit 'join' with their userId to subscribe to their own updates
   socket.on('join', (userId) => {
     socket.join(`user-${userId}`);
     console.log(`Socket ${socket.id} joined room user-${userId}`);
