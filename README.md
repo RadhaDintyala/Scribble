@@ -71,17 +71,6 @@ Scribble is currently under active development. Some features may be in a beta s
 
 -----
 
-## 📂 Project Structure
-
-```text
-client/
-├── public/          # Assets (Favicons, etc.)
-├── src/
-│   ├── components/  # Navbar, NoteCard, CreateNote
-│   ├── pages/       # Home, Login, Signup
-│   ├── App.jsx      # Route management
-│   └── main.jsx     # Entry point
-
 ```
 
 -----
