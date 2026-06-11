@@ -16,12 +16,12 @@ Scribble is currently under active development. Some features may be in a beta s
   * **Glassmorphic UI:** A beautiful, frosted-glass interface that adapts to your wallpaper.
   * **Real-time Creation:** Quickly jot down notes with an intuitive "Take a Note" interface.
   * **Responsive Design:** Optimized for both desktop and mobile views with a floating capsule navbar.
-  * **Voice Integration:**  Record thoughts on the go.
   * **Secure Auth:** Full Login and Signup flow to keep your scribbles private.
 
 ## 🛠️ Tech Stack
 
   * **Frontend:** React.js, Tailwind CSS
+  * **Backend:** Node js
   * **Icons:** Lucide React
   * **Routing:** React Router DOM
   * **Styling:** Glassmorphism with Backdrop-blur filters
@@ -49,15 +49,20 @@ Scribble is currently under active development. Some features may be in a beta s
     ```bash
     npm install
     ```
+3.  **Set .env:**
 
-3.  **Run the development server:**
+    ```bash
+    set your own environment variables(db url's , jwtokens)
+    ```
+
+4.  **Run the development server:**
 
     ```bash
     npm run dev
     ```
 
-4.  **Open the app:**
-    Navigate to `http://localhost:5173` to see your Scribble app in action\!
+5.  **Open the app:**
+    Navigate to `http://localhost:5173` to see the Scribble app in action\!
 
 -----
 
